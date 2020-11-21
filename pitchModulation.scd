@@ -1,41 +1,45 @@
-Server.killAll;
-ServerOptions.devices;
-
-
 (
-SynthDef.new(\longTone, {arg freq = 100;
+// define reused functions at the top
+var makeWorm, playThreeWorms;
+var getWait = { rrand(2, 10) };
+
+// define simple sinOsc synth
+SynthDef.new(\longTone, {
+	arg freq = 100, lag = 2;
+
+	var freqOut = Lag.kr((freq!2), lag);
+	var env = EnvGen.ar(Env([0, 0.2], [1]));
 	Out.ar(
 		0,
-		SinOsc.ar((freq!2).lag(3),  0, 1) * 0.2;
+		SinOsc.ar(freqOut) * env;
 	);
 }).add;
-)
-(
-var getFreq = { rrand(30, 175).postln; };
-var getWait = { rrand(5, 20) };
 
-u = Routine({
-	v = Synth(\longTone, [\freq, getFreq.value()]);
+// routine to create a synth and a loop that continuously changes its freq and lag
+makeWorm = Routine({
+	var getFreq = { rrand(30, 175) };
+	var getLag = { rrand(1, 4) };
+
+	var worm = Synth(\longTone, [\freq, getFreq.value()]);
 	{
 		getWait.value().yield;
-		v.set(\freq, getFreq.value());
+		worm.set(\lag, getLag.value().postln;);
+		worm.set(\freq, getFreq.value());
 	}.loop;
 });
-w = Routine({
-	x = Synth(\longTone, [\freq, getFreq.value()]);
-	{
-		getWait.value().yield;
-		x.set(\freq, getFreq.value());
-	}.loop;
+
+// routine to create three instances of the synth "worm" and play them with staggered entrances
+threeWorms = Routine({
+	var worm1 = makeWorm.p;
+	var worm2 = makeWorm.p;
+	var worm3 = makeWorm.p;
+	worm1.play;
+	getWait.value().wait;
+	worm2.play;
+	getWait.value().wait;
+	worm3.play;
 });
-y = Routine({
-	z = Synth(\longTone, [\freq, getFreq.value()]);
-	{
-		getWait.value().yield;
-		z.set(\freq, getFreq.value());
-	}.loop;
-});
-u.play;
-w.play;
-y.play;
+
+// play the worms
+threeWorms.play;
 )
