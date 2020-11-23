@@ -1,6 +1,6 @@
 (
 // define reused functions at the top
-var makeWorm, playThreeWorms;
+var makeWorm, threeWorms;
 var getWait = { rrand(2, 10) };
 
 // define simple sinOsc synth
@@ -23,7 +23,7 @@ makeWorm = Routine({
 	var worm = Synth(\longTone, [\freq, getFreq.value()]);
 	{
 		getWait.value().yield;
-		worm.set(\lag, getLag.value().postln;);
+		worm.set(\lag, getLag.value());
 		worm.set(\freq, getFreq.value());
 	}.loop;
 });
