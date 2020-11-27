@@ -4,15 +4,15 @@ b.play;
 
 (
 {
-    var trate, dur, trig, transpose, pos, pan, amp;
-	    trate = MouseY.kr(8,120,1); //MouseY's args are minval, maxval, warp (0-1 lin-exp)
-    dur = 12 / trate; // duration of grain in seconds. based on min&max above this yields 1.5-0.1 sec
+    var trate, trig, transpose, pos, dur, pan, amp;
+	trate = MouseY.kr(8,120,1); //MouseY's args are minval, maxval, warp (0-1 lin-exp)
 	trig = Impulse.kr(trate); // At each trigger, sample TGrain's other arguments to create a new grain
-    transpose = 1; //1 = normal, 2=octave up, 0.5=octave down, -1=backwards, etc
-    pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, trig); // centerpoint of grain wrt source file start, in seconds. the TRand helps avert robotic sounding result
-    pan = WhiteNoise.kr(0.6);
+	transpose = 1; //1 = normal, 2=octave up, 0.5=octave down, -1=backwards, etc
+	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, trig); // centerpoint of grain wrt source file start, in seconds. the TRand helps avert robotic sounding result
+	dur = 12 / trate; // duration of grain in seconds. based on min&max above this yields 1.5-0.1 sec
+	pan = WhiteNoise.kr(0.6);
 	amp = 0.3;
-    TGrains.ar(2, trig, b, transpose, pos, dur, pan, amp);
+	TGrains.ar(2, trig, b, transpose, pos, dur, pan, amp);
 }.scope(zoom: 4);
 )
 
