@@ -30,16 +30,15 @@ f.numFrames/f.sampleRate; // return buffer length in seconds
 	maxGrains = 512;
 	density = 40; // number of new grains created per second. 40 is a great value for this
 	trig = Impulse.ar(density); // trig is what cues GrainBuf to evaluate all the other variables & make a new grain
-	dur = density/12; // this is in seconds, so quite long!
-	//dur = (maxGrains)/density-1; // might be another way of maximizing overall number of grains!
+	dur = density/12; // this is in seconds, so quite long! was previously set to density/4 i.e. 10 seconds
 	// once everything's rolling, number of grains = density * dur
+	//dur = (maxGrains)/density-1; // might be another way of maximizing overall number of grains!
 	transpose = MouseY.kr(0.5,2,1);
-	pos = MouseX.kr(0,1); //range of TRand could be .01 maybe?
-	//pos.poll;
-	(pos*c.numFrames/c.sampleRate).poll(density);
-	interp = 2; //2= apply linear interpolation when transpose value changes
+	interp = 2; //2= apply linear interpolation when transpose value changes. other values are 4 (cubic interp) or 1 (no interp)
+	pos = MouseX.kr(0,1); //plus a small TRand value added below
+	(pos*c.numFrames/c.sampleRate).poll(density); // post the position of the most recently created grain (in seconds)
 	pan = WhiteNoise.kr(0.6); // -1 hard left, +1 hard right
-	envbuf = -1;
+	envbuf = -1; // -1 denotes built-in Hanning envelope
 	sigout1 = GrainBuf.ar(numChannels, trig, dur, c, transpose, pos+ TRand.kr(0,0.001,trig), interp, pan, envbuf, maxGrains);
 	sigout2 = GrainBuf.ar(numChannels, trig, dur, c, transpose*2, pos+ TRand.kr(0,0.001,trig), interp, pan, envbuf, maxGrains);
 	sigout = (sigout1 + sigout2)/density*4;
