@@ -7,12 +7,12 @@ var getRand = { rrand(50, 150).postln; };
 {
 	var sig;
 	sig = GrainSin.ar(
-		2,
-		Dust.ar(3),
+		1,
+		Dust.ar(1.5),
 		0.2,
 		LFNoise0.kr(10, 50, 100),
 		envbufnum: z,
-		mul: 1
+		mul: 0.5
 	)
 }.play;
 )

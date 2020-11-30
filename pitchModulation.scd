@@ -1,8 +1,4 @@
 (
-// define reused functions at the top
-var makeWorm, threeWorms;
-var getWait = { rrand(2, 10) };
-
 // define simple sinOsc synth
 SynthDef.new(\longTone, {
 	arg freq = 100, lag = 2;
@@ -14,6 +10,12 @@ SynthDef.new(\longTone, {
 		SinOsc.ar(freqOut) * env;
 	);
 }).add;
+)
+
+(
+// define reused functions at the top
+var makeWorm, threeWorms;
+var getWait = { rrand(5, 30) };
 
 // routine to create a synth and a loop that continuously changes its freq and lag
 makeWorm = Routine({
