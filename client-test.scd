@@ -47,8 +47,8 @@ SynthDef.new(\source, {
 
 
 //shorthand
-~rPiS = ~serverArray[0];
+~serverArray[0];
 
 
 //msg send test
-~rPiS.sendMsg("/s_new", \source, 5, 0, 1);
+~serverArray[0].sendMsg("/s_new", \source, 5, 0, 1);
