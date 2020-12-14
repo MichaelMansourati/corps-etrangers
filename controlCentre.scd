@@ -25,13 +25,17 @@ SynthDef(\busCondenser, {
 	var splayedChannels = Splay.ar(inChannels);
 	Out.ar(0, splayedChannels);
 }).add;
+
+//instantiate busCondenser for all six busses
+~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
 )
+~condenser.free;
+
+
 //instantiate busToServer (not needed right now)
 // var toServer = Synth(\busToServer, [\bus, ~instBusses[0], \out, 0]);
 
-//instantiate busCondenser for last five busses
-~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
-~condenser.free;
+
 
 //untested line (stuff for remote server
 // ~rpis.sendMsg(\s_new, \busToServer, ~rpi.nextNodeID, 0, 1);
@@ -41,18 +45,6 @@ SynthDef(\busCondenser, {
 // the salient things we need here are the ~condenser and the ~instBusses
 // the ~instbusses we can use as stand-ins for instruments while iterating and testing locally
 // the ~condenser is what crams them into the stereo field we can hear through headphones
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
