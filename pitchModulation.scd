@@ -1,47 +1,41 @@
 (
 // define simple sinOsc synth
 SynthDef.new(\longTone, {
-	arg freq = 100, lag = 2;
+	arg freq = 100, lag = 2, out = 0, gate = 1;
 
-	var freqOut = Lag.kr((freq!2), lag);
-	var env = EnvGen.ar(Env([0, 0.2], [1]));
+	var freqOut = Lag.kr((freq.value()!2), lag);
+	var env = EnvGen.ar(Env([0, 0.2, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf);
 	Out.ar(
-		0,
+		out,
 		SinOsc.ar(freqOut) * env;
 	);
 }).add;
+
+s.sync
+
+//randomness generators (do I need to use P*** functions here?)
+var getFreq = Pwhite(30, 175, inf);
+var getLag = Pwhite(1, 4, inf);
+var getWait = Pwhite(5, 15, inf);
+
+//define a Pmono and apply it to synth "x"
+~getWormPattern = {
+	arg out = 0;
+
+	Pmono(
+		\longTone,
+		\dur, getWait.trace,
+		\freq, getFreq.trace,
+		\lag, getLag.trace,
+		\gate, 1,
+		\out, out
+	).play;
+};
+//copy previous Pbind and apply to synths "y" and "z"
 )
 
-(
-// define reused functions at the top
-var makeWorm, threeWorms;
-var getWait = { rrand(5, 30) };
+a = ~getWormPattern.value(~instBusses[0]);
+b = ~getWormPattern.value(~instBusses[2]);
+c = ~getWormPattern.value(~instBusses[5]);
 
-// routine to create a synth and a loop that continuously changes its freq and lag
-makeWorm = Routine({
-	var getFreq = { rrand(30, 175) };
-	var getLag = { rrand(1, 4) };
-
-	var worm = Synth(\longTone, [\freq, getFreq.value()]);
-	{
-		getWait.value().yield;
-		worm.set(\lag, getLag.value());
-		worm.set(\freq, getFreq.value());
-	}.loop;
-});
-
-// routine to create three instances of the synth "worm" and play them with staggered entrances
-threeWorms = Routine({
-	var worm1 = makeWorm.p;
-	var worm2 = makeWorm.p;
-	var worm3 = makeWorm.p;
-	worm1.play;
-	getWait.value().wait;
-	worm2.play;
-	getWait.value().wait;
-	worm3.play;
-});
-
-// play the worms
-threeWorms.play;
-)
+[a, b, c].do{|item| item.stop};
