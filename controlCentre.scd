@@ -1,8 +1,11 @@
+(
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
 s.meter;
 
-s.outputBus
+s.outputBus;
+s.boot;
+)
 
 (
 var createBusses = { arg instCount = 6;
@@ -37,14 +40,15 @@ SynthDef(\busCondenser, {
 
 
 
-//untested line (stuff for remote server
+//untested line (stuff for remote server) ignore for now
 // ~rpis.sendMsg(\s_new, \busToServer, ~rpi.nextNodeID, 0, 1);
 
 
 // USEFUL PARTS OF THIS FILE
 // the salient things we need here are the ~condenser and the ~instBusses
-// the ~instbusses we can use as stand-ins for instruments while iterating and testing locally
-// the ~condenser is what crams them into the stereo field we can hear through headphones
+// the ~instbusses will eventually go to separate server-instruments.
+// for now we can simulate this environment by condensing the busses into a stereo field
+// the ~condenser collects them and splays them across the two outputBusChannels we defined at the top
 
 
 
