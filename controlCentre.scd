@@ -1,3 +1,5 @@
+//run this block to configure and boot the server, create the busCondenser SynthDef,
+//as well as create the setup function
 (
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
@@ -6,8 +8,18 @@ s.outputBus;
 
 s.boot;
 
+//for test purposes, condense all busses and splay them across stereo field
+//number of channels for In.ar() MUST be static/ maybe we can use prependArgs to get around this(?)
+SynthDef(\busCondenser, {
+	arg bus = ~instBusses[1].index.postln;
+	var inChannels = In.ar(3, 6).postln;
+	var splayedChannels = Splay.ar(inChannels);
+	Out.ar(0, splayedChannels);
+}).add;
+
 
 ~setup = {
+	//number of instruments being used
 	arg instCount = 6;
 
 	var createBusses = { arg instCount = 6;
@@ -17,56 +29,42 @@ s.boot;
 		Array.fill(instCount, { Group.new().postln; });
 	};
 
+	//free groups and busses before recreating
 	~instGroups.do({|group| group.free; });
-	~instGroups = createGroups.value(instCount);
 	~instBusses.do({|bus| bus.free; });
+
+	//create groups and busses
+	~instGroups = createGroups.value(instCount);
 	~instBusses = createBusses.value(instCount);
 	~instBusses[1].postln;
 
-	//route designated bus to channel 0 (which will eventually be channel 0 of the remote instrument server)
-	SynthDef(\busToServer, {
-		var bus = 3, out = 0;
-		Out.ar(bus, out);
-	}).add;
-
-	//for test purposes, condense all busses and splay them across stereo field
-	//number of channels for In.ar() MUST be static.
-	SynthDef(\busCondenser, {
-		arg bus = ~instBusses[1].index.postln;
-		var inChannels = In.ar(3, 6).postln; //use prependArgs for non-control inputs???
-		var splayedChannels = Splay.ar(inChannels);
-		Out.ar(0, splayedChannels);
-	}).add;
-
+	//free the condenser before recreating
 	~condenser.free;
+
 	//instantiate busCondenser for all six busses
 	~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
 }
 )
-~condenser.free;
+
+//call the setup function to actually create the environment.
+//You can pass a number as an argument in value() to choose the number of instruments
 ~setup.value();
 
-//instantiate busToServer (not needed right now)
-// var toServer = Synth(\busToServer, [\bus, ~instBusses[0], \out, 0]);
+//these are the environment variables we created with the ~setup function.
+//they can be called from any file once the ~setup function has been called.
+//you can also call ~setup from any file as well
+//you can run each of these lines individually to see what they represent in the post window
+~instGroups;
+~instBusses;
+~condenser;
+
+//take a look at the node tree as well:
+s.plotTree;
 
 
-
-//untested line (stuff for remote server) ignore for now
-// ~rpis.sendMsg(\s_new, \busToServer, ~rpi.nextNodeID, 0, 1);
-
-
-// USEFUL PARTS OF THIS FILE
-// the salient things we need here are the ~condenser and the ~instBusses
-// the ~instbusses will eventually go to separate server-instruments.
-// for now we can simulate this environment by condensing the busses into a stereo field
-// the ~condenser collects them and splays them across the two outputBusChannels we defined at the top
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////
 // TESTING MATERIAL ///////////////
+///////////////////////////////////
 
 //repeating ping - sample synth
 (
