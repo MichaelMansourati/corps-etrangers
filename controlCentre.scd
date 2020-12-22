@@ -2,38 +2,49 @@
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
 s.meter;
-
 s.outputBus;
+
 s.boot;
-)
 
-(
-var createBusses = { arg instCount = 6;
-	Array.fill(instCount, { Bus.audio(s, 1).postln; });
-};
-//a bus for each hypothetical instrument (can be later routed to other
-~instBusses = createBusses.value(6);
 
-//route designated bus to channel 0 (which will eventually be channel 0 of the remote instrument server)
-SynthDef(\busToServer, {
-	var bus = 3, out = 0;
-	Out.ar(bus, out);
-}).add;
+~setup = {
+	arg instCount = 6;
 
-//for test purposes, condense all busses and splay them across stereo field
-//number of channels for In.ar() MUST be static.
-SynthDef(\busCondenser, {
-	arg bus = ~instBusses[1].index.postln;
-	var inChannels = In.ar(3, 6).postln;
-	var splayedChannels = Splay.ar(inChannels);
-	Out.ar(0, splayedChannels);
-}).add;
+	var createBusses = { arg instCount = 6;
+		Array.fill(instCount, { Bus.audio(s, 1).postln; });
+	};
+	var createGroups = { arg instCount = 6;
+		Array.fill(instCount, { Group.new().postln; });
+	};
 
-//instantiate busCondenser for all six busses
-~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
+	~instGroups.do({|group| group.free; });
+	~instGroups = createGroups.value(instCount);
+	~instBusses.do({|bus| bus.free; });
+	~instBusses = createBusses.value(instCount);
+	~instBusses[1].postln;
+
+	//route designated bus to channel 0 (which will eventually be channel 0 of the remote instrument server)
+	SynthDef(\busToServer, {
+		var bus = 3, out = 0;
+		Out.ar(bus, out);
+	}).add;
+
+	//for test purposes, condense all busses and splay them across stereo field
+	//number of channels for In.ar() MUST be static.
+	SynthDef(\busCondenser, {
+		arg bus = ~instBusses[1].index.postln;
+		var inChannels = In.ar(3, 6).postln; //use prependArgs for non-control inputs???
+		var splayedChannels = Splay.ar(inChannels);
+		Out.ar(0, splayedChannels);
+	}).add;
+
+	~condenser.free;
+	//instantiate busCondenser for all six busses
+	~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
+}
 )
 ~condenser.free;
-
+~setup.value();
 
 //instantiate busToServer (not needed right now)
 // var toServer = Synth(\busToServer, [\bus, ~instBusses[0], \out, 0]);
