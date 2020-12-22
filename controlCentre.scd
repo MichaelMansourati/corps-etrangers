@@ -22,21 +22,27 @@ SynthDef(\busCondenser, {
 	//number of instruments being used
 	arg instCount = 6;
 
-	var createBusses = { arg instCount = 6;
+	var createBusses = {
+		arg instCount = 6;
 		Array.fill(instCount, { Bus.audio(s, 1).postln; });
 	};
-	var createGroups = { arg instCount = 6;
+	var createGroups = {
+		arg instCount = 6;
 		Array.fill(instCount, { Group.new().postln; });
 	};
+	var createPatternPlaceholders = {
+		arg instCount = 6;
+		Array.newClear(instCount);
+	};
 
-	//free groups and busses before recreating
+	//free groups and busses before recreating (patterns can just be overWritten)
 	~instGroups.do({|group| group.free; });
 	~instBusses.do({|bus| bus.free; });
 
-	//create groups and busses
+	//create groups, busses, and patternPlaceholders
 	~instGroups = createGroups.value(instCount);
 	~instBusses = createBusses.value(instCount);
-	~instBusses[1].postln;
+	~instPatterns = createPatternPlaceholders.value(instCount);
 
 	//free the condenser before recreating
 	~condenser.free;
@@ -48,14 +54,21 @@ SynthDef(\busCondenser, {
 
 //call the setup function to actually create the environment.
 //You can pass a number as an argument in value() to choose the number of instruments
+
 ~setup.value();
+
+//you'll see some errors if you run this when you don't already have groups. Those are fine. It should still be working as expected.
+
+
 
 //these are the environment variables we created with the ~setup function.
 //they can be called from any file once the ~setup function has been called.
 //you can also call ~setup from any file as well
 //you can run each of these lines individually to see what they represent in the post window
+//there should be a 6-item array for each of the ~inst____s
 ~instGroups;
 ~instBusses;
+~instPatterns;
 ~condenser;
 
 //take a look at the node tree as well:

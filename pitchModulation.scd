@@ -1,23 +1,23 @@
 
 (
 var getFreq = Pwhite(50, 175, inf);
-	var getLag = Pwhite(2, 2, inf);
-	var getWait = Pwhite(3, 5, inf);
-	var threeTonesInstance;
+var getLag = Pwhite(2, 2, inf);
+var getWait = Pwhite(3, 5, inf);
+var threeTonesInstance;
 
-	SynthDef.new(\threeTones, {
-		arg freq1 = 100, freq2 = 200, freq3 = 300, lag = 2, out = 0, gate = 1;
+SynthDef.new(\threeTones, {
+	arg freq1 = 100, freq2 = 200, freq3 = 300, lag = 2, out = 0, gate = 1;
 
-		var getFreqOut = {|freq| Lag.kr(freq, lag)};
-		var freqOut1 = getFreqOut.value(freq1);
-		var freqOut2 = getFreqOut.value(freq2);
-		var freqOut3 = getFreqOut.value(freq3);
-		var env = EnvGen.ar(Env([0, 0.2, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf);
-		Out.ar(
-			out,
-			Mix([SinOsc.ar(freqOut1), SinOsc.ar(freqOut2), SinOsc.ar(freqOut3)]) * env
-		);
-	}).add;
+	var getFreqOut = {|freq| Lag.kr(freq, lag)};
+	var freqOut1 = getFreqOut.value(freq1);
+	var freqOut2 = getFreqOut.value(freq2);
+	var freqOut3 = getFreqOut.value(freq3);
+	var env = EnvGen.ar(Env([0, 0.2, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf);
+	Out.ar(
+		out,
+		Mix([SinOsc.ar(freqOut1), SinOsc.ar(freqOut2), SinOsc.ar(freqOut3)]) * env
+	);
+}).add;
 
 
 ~worms = { arg out, target;
@@ -46,16 +46,3 @@ var getFreq = Pwhite(50, 175, inf);
 	).play;
 }
 )
-
-x = ~worms.value;
-x.stop;
-x.start;
-
-~group.set(\gate, 0);
-x.stop;
-//next step is to create a routine or function (that can be stopped) to create n worms and put them on a bus of my choosing
-
-//use pbind on a synth that takes three frequencies
-//the pbind has keys for each independent freq
-//using the "args" key we determine which freq we're setting
-//duration between updating freqs will choose between either 0 seconds or 0-20 seconds (weighted towards the continuum) 
