@@ -19,8 +19,8 @@ SynthDef.new(\threeTones, {
 	);
 }).add;
 
-
-~worms = { arg out, target;
+//freq arg doesn't do anything yet
+~worms = { arg freq, out, target;
 	threeTonesInstance = Synth(
 		\threeTones,
 		[

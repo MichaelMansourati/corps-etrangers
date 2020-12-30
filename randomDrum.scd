@@ -1,6 +1,6 @@
 (
 SynthDef(\randomDrum, {
-	arg freq = 100, target = 1, out = 0;
+	arg freq = 100, out = 0, gate = 1;
 	var envBufNum = Buffer.sendCollection(s, Env.perc(0.001, 0.1).discretize, 1);
 
 	var sig = GrainSin.ar(
@@ -14,7 +14,22 @@ SynthDef(\randomDrum, {
 
 	Out.ar(
 		out,
-		sig * EnvGen.kr(Env.adsr(0, 0, 1, 0.2), doneAction: Done.freeSelf)
+		sig * EnvGen.ar(Env([0, 1, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf)
 	);
 }).add;
+
+
+~randomDrum = {
+	arg freq = 200, out = 0, target = 1;
+	Synth(
+		\randomDrum,
+		[
+			\freq, freq,
+			\out, out
+		],
+		target,
+		\addToHead
+
+	);
+};
 )
