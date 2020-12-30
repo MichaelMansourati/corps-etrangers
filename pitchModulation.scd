@@ -1,47 +1,48 @@
-(
-// define simple sinOsc synth
-SynthDef.new(\longTone, {
-	arg freq = 100, lag = 2;
 
-	var freqOut = Lag.kr((freq!2), lag);
-	var env = EnvGen.ar(Env([0, 0.2], [1]));
+(
+var getFreq = Pwhite(50, 175, inf);
+var getLag = Pwhite(2, 2, inf);
+var getWait = Pwhite(3, 5, inf);
+var threeTonesInstance;
+
+SynthDef.new(\threeTones, {
+	arg freq1 = 100, freq2 = 200, freq3 = 300, lag = 2, out = 0, gate = 1;
+
+	var getFreqOut = {|freq| Lag.kr(freq, lag)};
+	var freqOut1 = getFreqOut.value(freq1);
+	var freqOut2 = getFreqOut.value(freq2);
+	var freqOut3 = getFreqOut.value(freq3);
+	var env = EnvGen.ar(Env([0, 0.2, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf);
 	Out.ar(
-		0,
-		SinOsc.ar(freqOut) * env;
+		out,
+		Mix([SinOsc.ar(freqOut1), SinOsc.ar(freqOut2), SinOsc.ar(freqOut3)]) * env
 	);
 }).add;
-)
 
-(
-// define reused functions at the top
-var makeWorm, threeWorms;
-var getWait = { rrand(5, 30) };
+//freq arg doesn't do anything yet
+~worms = { arg freq, out, target;
+	threeTonesInstance = Synth(
+		\threeTones,
+		[
+			\freq1, getFreq.asStream.next,
+			\freq2, getFreq.asStream.next,
+			\freq3, getFreq.asStream.next,
+			\out, out
+		],
+		target,
+		\addToHead
+	);
 
-// routine to create a synth and a loop that continuously changes its freq and lag
-makeWorm = Routine({
-	var getFreq = { rrand(30, 175) };
-	var getLag = { rrand(1, 4) };
-
-	var worm = Synth(\longTone, [\freq, getFreq.value()]);
-	{
-		getWait.value().yield;
-		worm.set(\lag, getLag.value());
-		worm.set(\freq, getFreq.value());
-	}.loop;
-});
-
-// routine to create three instances of the synth "worm" and play them with staggered entrances
-threeWorms = Routine({
-	var worm1 = makeWorm.p;
-	var worm2 = makeWorm.p;
-	var worm3 = makeWorm.p;
-	worm1.play;
-	getWait.value().wait;
-	worm2.play;
-	getWait.value().wait;
-	worm3.play;
-});
-
-// play the worms
-threeWorms.play;
+	p = Pbind(
+		\id, threeTonesInstance,
+		\type, \set,
+		\args, Prand(#[[\freq1], [\freq2], [\freq3]], inf),
+		\dur, getWait.trace,
+		\freq1, getFreq.trace,
+		\freq2, getFreq.trace,
+		\freq3, getFreq.trace,
+		\lag, getLag.trace,
+		\gate, 1,
+	).play;
+}
 )
