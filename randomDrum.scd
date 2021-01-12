@@ -20,7 +20,7 @@ SynthDef(\randomDrum, {
 
 
 ~randomDrum = {
-	arg freq = 200, out = 0, target = 1;
+	arg out = 0, target = 1, freq = 200;
 	Synth(
 		\randomDrum,
 		[
