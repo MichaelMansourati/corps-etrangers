@@ -6,16 +6,12 @@ var getWait = Pwhite(4, 8, inf);
 var threeTonesInstance;
 
 SynthDef.new(\threeTones, {
-	arg freq1 = 100, freq2 = 200, freq3 = 300, lag = 2, out = 0, gate = 1;
+	arg freq1 = 100, freq2 = 200, freq3 = 300, out = 0, gate = 1;
 
-	var getFreqOut = {|freq| Lag.kr(freq, lag)};
-	var freqOut1 = getFreqOut.value(freq1);
-	var freqOut2 = getFreqOut.value(freq2);
-	var freqOut3 = getFreqOut.value(freq3);
 	var env = EnvGen.ar(
 		Env(
-			levels: [0, 0.6, 0.2, 0],
-			times: [0.005, 0.5, 1],
+			levels: [0, 0.7, 0.2, 0],
+			times: [0.01, 0.75, 1],
 			curve:[0, -4, 0],
 			releaseNode: 2
 		),
@@ -25,9 +21,9 @@ SynthDef.new(\threeTones, {
 	Out.ar(
 		out,
 		Mix([
-			SinOsc.ar(freqOut1),
-			SinOsc.ar(freqOut2),
-			SinOsc.ar(freqOut3)
+			SinOsc.ar(freq1),
+			SinOsc.ar(freq2),
+			SinOsc.ar(freq3)
 		])!2 * env
 	);
 }).add;
@@ -38,16 +34,15 @@ SynthDef.new(\threeTones, {
 	p = Pbind(
 		\instrument, \threeTones,
 		\args, Prand(#[[\freq1], [\freq2], [\freq3]], inf),
-		\dur, getWait.trace,
-		\freq1, getFreq.trace,
-		\freq2, getFreq.trace,
-		\freq3, getFreq.trace,
-		\lag, getLag.trace,
-		\sustain, Pkey(\dur) * Pwhite(0.0, 1.0, inf),
+		\dur, getWait,
+		\freq1, getFreq,
+		\freq2, getFreq,
+		\freq3, getFreq,
+		\sustain, Pkey(\dur) * Pwhite(0.0, 0.9, inf).trace,
 		\gate, 1,
 	).play;
 }
 )
 
-
 x = ~sustains.value;
+
