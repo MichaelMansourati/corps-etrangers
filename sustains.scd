@@ -1,48 +1,37 @@
 
 (
-var getFreq = Pwhite(50, 175, inf);
-var getLag = Pwhite(2, 2, inf);
-var getWait = Pwhite(4, 8, inf);
-var threeTonesInstance;
+(thisProcess.nowExecutingPath.dirname+/+"threeTonesCoreFunc.scd").load;
 
-SynthDef.new(\threeTones, {
-	arg freq1 = 100, freq2 = 200, freq3 = 300, out = 0, gate = 1;
 
-	var env = EnvGen.ar(
-		Env(
-			levels: [0, 0.7, 0.2, 0],
-			times: [0.01, 0.75, 1],
-			curve:[0, -4, 0],
-			releaseNode: 2
-		),
-		gate: gate,
-		doneAction: Done.freeSelf
+SynthDef(\threeTonesSustainsWrapper, {
+	var env = Env(
+		levels: [0, 0.7, 0.2, 0],
+		times: [0.01, 0.75, 1],
+		curve:[0, -4, 0],
+		releaseNode: 2
 	);
-	Out.ar(
-		out,
-		Mix([
-			SinOsc.ar(freq1),
-			SinOsc.ar(freq2),
-			SinOsc.ar(freq3)
-		])!2 * env
-	);
+	SynthDef.wrap(~threeTonesCoreFunc, nil, [env]);
 }).add;
 
-//freq arg doesn't do anything yet
-~sustains = { arg out, target, freq;
+~sustains = { arg out = 0, target = 1, melody =
+	(
+		freqs: [
+			[100, 110, 120],
+			[160, 170, 180],
+			[130, 140, 150]
+		],
+		durs: [5, 5, 5]
+	);
 
 	p = Pbind(
-		\instrument, \threeTones,
-		\args, Prand(#[[\freq1], [\freq2], [\freq3]], inf),
-		\dur, getWait,
-		\freq1, getFreq,
-		\freq2, getFreq,
-		\freq3, getFreq,
-		\sustain, Pkey(\dur) * Pwhite(0.0, 0.9, inf).trace,
+		\instrument, \threeTonesSustainsWrapper,
+		\dur, Pseq(melody[\durs], 1),
+		\freq1, Pseq(melody[\freqs][0], 1),
+		\freq2, Pseq(melody[\freqs][1], 1),
+		\freq3, Pseq(melody[\freqs][2], 1),
+		\sustain, Pkey(\dur) * Pwhite(0.0, 0.9, inf),
 		\gate, 1,
+		\out, out,
 	).play;
 }
 )
-
-x = ~sustains.value;
-
