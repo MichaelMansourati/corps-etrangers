@@ -9,7 +9,7 @@
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
 s.meter;
-s.outputBus;
+// s.outputBus;
 
 s.boot;
 
@@ -22,7 +22,8 @@ SynthDef(\busCondenser, {
 	Out.ar(0, splayedChannels);
 }).add;
 
-
+//setup function to call after server is ready
+//You can pass a number as an argument in value() to choose the number of instruments
 ~setup = {
 	//number of instruments being used
 	arg instCount = 6;
@@ -56,10 +57,5 @@ SynthDef(\busCondenser, {
 	~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
 }
 )
-
-//call the setup function to actually create the environment.
-//You can pass a number as an argument in value() to choose the number of instruments
-
-~setup.value();
 
 //you'll see some errors if you run this when you don't already have groups. Those are fine. It should still be working as expected.
