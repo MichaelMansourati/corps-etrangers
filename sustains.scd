@@ -5,7 +5,7 @@
 
 SynthDef(\threeTonesSustainsWrapper, {
 	var env = Env(
-		levels: [0, 0.7, 0.2, 0],
+		levels: [0, 0.3, 0.1, 0],
 		times: [0.01, 0.75, 1],
 		curve:[0, -4, 0],
 		releaseNode: 2
@@ -32,6 +32,8 @@ SynthDef(\threeTonesSustainsWrapper, {
 		\sustain, Pkey(\dur) * Pwhite(0.0, 0.9, inf),
 		\gate, 1,
 		\out, out,
+		\group, target,
+		\addAction, \addToHead
 	).play;
 }
 )
