@@ -19,12 +19,9 @@
 };
 
 ~simpleLoop = {
-	arg instArray = [1, 2, 4];
+	arg instArray = [1, 2];
 	var getRandomSound = { [~randomDrum, ~sustains, ~worms].choose; };
-	var getPlayTime = { rrand(10, 20) };
-	var getWaitTime = { rrand(5, 15) };
-
-	//melody creation (for zimmer synth)
+	var getWaitTime = { rrand(1, 3) };
 
 
 	instArray.do({ |i|
