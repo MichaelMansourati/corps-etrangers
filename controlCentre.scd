@@ -8,9 +8,6 @@
 
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
-s.meter;
-// s.outputBus;
-
 s.boot;
 
 //for test purposes, condense all busses and splay them across stereo field
