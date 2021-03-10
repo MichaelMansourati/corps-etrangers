@@ -5,23 +5,26 @@
 //run this block to create the simple loop function
 (
 ~simpleLoop = {
-	arg instArray = [1, 2];
+	arg instArray = [2, 3, 4];
 	var getRandomSound = { [~randomDrum, ~sustains, ~worms].choose; };
-	var getWaitTime = { rrand(1, 3) };
+	var getWaitTime = { rrand(4, 5) };
 
 
-	instArray.do({ |i|
+	instArray.do({ arg instNum, index;
 		Task({
 			{
-				~instPatterns[i] = getRandomSound.value.value(
-					~instBusses[i],
-					~instGroups[i],
+
+				(getWaitTime.value * index).yield;
+				~instPatterns[instNum] = getRandomSound.value.value(
+					instNum,
 					~melody
 				);
+
 				~melody[\durs].sum({|i| i }).yield;
-				~instPatterns[i].stop;
-				~instGroups[i].set(\gate, 0);
-				getWaitTime.value.yield;
+
+				~instPatterns[instNum].stop;
+				~instGroups[instNum].set(\gate, 0);
+				{ ~instViews[instNum].string = "bus "+instNum+" freqs: []"; }.defer;
 			}.loop;
 		}).start;
 	});
