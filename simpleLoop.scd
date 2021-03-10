@@ -37,10 +37,11 @@
 x = {
 	//every twenty seconds, set ~subject to a new random melody
 	TempoClock.sched(0, {
-		~melody = ~melodyCreator.value.postln;
+		~melody = ~melodyCreator.value;
+		{ ~updateDashboard.value }.defer;
 		~melodyLifetime;
 	});
-
 	~simpleLoop.value;
 }.value;
+
 )
