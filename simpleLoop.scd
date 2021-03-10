@@ -29,6 +29,7 @@
 
 )
 
+~showLevelsAndTree.value()
 ~setup.value();
 
 //run melody cycler and loop
