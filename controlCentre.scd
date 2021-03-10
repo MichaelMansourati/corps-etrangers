@@ -5,6 +5,7 @@
 (thisProcess.nowExecutingPath.dirname+/+"sustains.scd").load;
 (thisProcess.nowExecutingPath.dirname+/+"randomDrum.scd").load;
 (thisProcess.nowExecutingPath.dirname+/+"pitchModulation.scd").load;
+(thisProcess.nowExecutingPath.dirname+/+"melodiesFactory.scd").load;
 
 s.options.numOutputBusChannels = 2;
 s.options.numInputBusChannels = 1;
