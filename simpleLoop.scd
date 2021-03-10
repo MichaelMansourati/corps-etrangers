@@ -4,20 +4,6 @@
 
 //run this block to create the simple loop function
 (
-//how long a melody exists before it is replaced
-~melodyLifetime = 30;
-~melodyCreator = {
-	var getMelodyLength = { rrand(3, 6) };
-	var getMelodyDurs = { |length| Array.fill(length, { rrand(3, 10) }) };
-	var getMelodyFreqs = { |length| Array.fill(length, { rrand(40, 160) })};
-	var len = getMelodyLength.value;
-
-	(
-		freqs: [ getMelodyFreqs.value(len), getMelodyFreqs.value(len), getMelodyFreqs.value(len)],
-		durs: getMelodyDurs.value(len)
-	)
-};
-
 ~simpleLoop = {
 	arg instArray = [1, 2];
 	var getRandomSound = { [~randomDrum, ~sustains, ~worms].choose; };
