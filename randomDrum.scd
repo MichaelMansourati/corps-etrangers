@@ -2,6 +2,7 @@
 SynthDef(\randomDrum, {
 	arg freq = 100, out = 0;
 	var env = EnvGen.ar(Env.perc(0.004, 0.5, 0.33), gate: Dust.ar(1.1));
+
 	Out.ar(
 		out,
 		SinOsc.ar(freq) * env

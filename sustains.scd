@@ -1,16 +1,27 @@
-
 (
-(thisProcess.nowExecutingPath.dirname+/+"threeTonesCoreFunc.scd").load;
-
-
-SynthDef(\threeTonesSustainsWrapper, {
+SynthDef(\sustains, {
 	var env = Env(
 		levels: [0, 0.3, 0.1, 0],
 		times: [0.01, 0.75, 1],
 		curve:[0, -4, 0],
 		releaseNode: 2
 	);
-	SynthDef.wrap(~threeTonesCoreFunc, nil, [env]);
+	SynthDef.wrap(
+		{
+			arg env, freq = 100, out = 0, gate = 1;
+
+			var envLocal = EnvGen.ar(
+				env,
+				gate: gate,
+				doneAction: Done.freeSelf
+			);
+			var sig = SinOsc.ar(freq) * envLocal;
+
+			Out.ar(out, sig);
+		},
+		nil,
+		[env]
+	);
 }).add;
 
 ~sustains = { arg out = 0, target = 1, melody =

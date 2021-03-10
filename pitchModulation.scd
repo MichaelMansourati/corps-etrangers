@@ -2,12 +2,9 @@
 (
 SynthDef.new(\threeTones, {
 	arg freq = 100, freqWait = 10, lag = 2, out = 0, gate = 1;
-
 	var env = EnvGen.ar(Env([0, 0.2, 0], [1, 1], releaseNode: 1), gate: gate, doneAction: Done.freeSelf);
-	Out.ar(
-		out,
-		SinOsc.ar(Lag.kr(freq, lag)) * env
-	);
+	var sig = SinOsc.ar(Lag.kr(freq, lag)) * env;
+	Out.ar(out, sig);
 }).add;
 
 //freq arg doesn't do anything yet
