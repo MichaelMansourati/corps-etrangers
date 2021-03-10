@@ -1,6 +1,6 @@
 (
 //how long a melody exists before it is replaced
-~melodyLifetime = 2;
+~melodyLifetime = 30;
 ~melodyCreator = {
 	var getMelodyLength = { rrand(3, 6) };
 	var getMelodyDurs = { |length| Array.fill(length, { rrand(3, 10) }) };
