@@ -7,8 +7,7 @@ SynthDef.new(\threeTones, {
 	Out.ar(out, sig);
 }).add;
 
-//freq arg doesn't do anything yet
-~worms = { arg out = 0, target = 1, melody =
+~worms = { arg index = 0, melody =
 	(
 		freqs: [
 			[100, 150, 120],
@@ -25,9 +24,11 @@ SynthDef.new(\threeTones, {
 		\timingOffset, Pkey(\dur) * Pwhite(-0.5!3, 0.5!3),
 		\lag, Pwhite(2, 2, inf),
 		\gate, 1,
-		\out, out,
-		\group, target,
-		\addAction, \addToHead
+		\out, ~instBusses[index],
+		\group, ~instGroups[index],
+		\addAction, \addToHead,
+		\index, index,
+		\callback, ~updateView
 	).play;
 }
 )

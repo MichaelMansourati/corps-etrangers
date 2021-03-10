@@ -24,7 +24,7 @@ SynthDef(\sustains, {
 	);
 }).add;
 
-~sustains = { arg out = 0, target = 1, melody =
+~sustains = { arg index = 0, melody =
 	(
 		freqs: [
 			[100, 110, 120],
@@ -35,16 +35,16 @@ SynthDef(\sustains, {
 	);
 
 	p = Pbind(
-		\instrument, \threeTonesSustainsWrapper,
+		\instrument, \sustains,
 		\dur, Pseq(melody[\durs], 1),
-		\freq1, Pseq(melody[\freqs][0], 1),
-		\freq2, Pseq(melody[\freqs][1], 1),
-		\freq3, Pseq(melody[\freqs][2], 1),
+		\freq, Pseq(melody[\freqs].flop, 1),
 		\sustain, Pkey(\dur) * Pwhite(0.0, 0.9, inf),
 		\gate, 1,
-		\out, out,
-		\group, target,
-		\addAction, \addToHead
+		\out, ~instBusses[index],
+		\group, ~instGroups[index],
+		\addAction, \addToHead,
+		\index, index,
+		\callback, ~updateView
 	).play;
 }
 )

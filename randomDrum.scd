@@ -9,12 +9,12 @@ SynthDef(\randomDrum, {
 	);
 }).add;
 
-~randomDrum = { arg out = 0, target = 1, melody =
+~randomDrum = { arg index = 0, melody =
 	(
 		freqs: [
 			[100, 110, 120],
 			[200, 210, 220],
-			[300, 310, 320]
+			[400, 500, 600]
 		],
 		durs: [4, 4, 4]
 	);
@@ -22,12 +22,13 @@ SynthDef(\randomDrum, {
 	p = Pmono(
 		\randomDrum,
 		\dur, Pseq(melody[\durs], inf),
-		\sustain, Pkey(\dur).trace,
+		\sustain, Pkey(\dur),
 		\freq, Pseq(melody[\freqs].flop, inf),
-		\out, out,
-		\group, target,
-		\addAction, \addToHead
+		\out, ~instBusses[index],
+		\group, ~instGroups[index],
+		\addAction, \addToHead,
+		\index, index,
+		\callback, ~updateView
 	).play;
 }
 )
-
