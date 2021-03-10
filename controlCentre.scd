@@ -38,12 +38,16 @@ SynthDef(\busCondenser, {
 		arg instCount = 6;
 		Array.newClear(instCount);
 	};
+	var createViews = {
+		arg instCount = 6, parent = nil;
+		Array.fill(instCount, { |i| StaticText.new(parent, Rect(5, (5 + (i * 25)), 300, 15)); });
+	};
 
 	//free groups and busses before recreating (patterns can just be overWritten)
 	~instGroups.do({|group| group.free; });
 	~instBusses.do({|bus| bus.free; });
 
-	//create groups, busses, and patternPlaceholders
+	//create groups, busses, patternPlaceholders, and views
 	~instGroups = createGroups.value(instCount);
 	~instBusses = createBusses.value(instCount);
 	~instPatterns = createPatternPlaceholders.value(instCount);
@@ -53,10 +57,25 @@ SynthDef(\busCondenser, {
 
 	//instantiate busCondenser for all six busses
 	~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
-}
+
+	// create dashboard window
+	~dashboard.notNil.postln;
+	if(~dashboard.notNil, { ~dashboard.close; }, {});
+	~dashboard = Window("Dashboard", Rect(10, 10, 500, 500)).front;
+	~melodyTable = View(~dashboard);
+	~instViews = createViews.value(instCount, ~dashboard);
+};
+
+~updateView = {
+	arg event;
+	var index = event.asStream[\index];
+	{
+		topEnvironment[\instViews][event.asStream[\index]].string = "bus "+ event.asStream[\index]+" freqs: "+ event.asStream[\freq];
+	}.defer;
+};
+
 ~showLevelsAndTree = {
 	s.meter;
 	s.plotTree;
 };
 )
-
