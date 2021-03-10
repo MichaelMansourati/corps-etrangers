@@ -56,6 +56,9 @@ SynthDef(\busCondenser, {
 	//instantiate busCondenser for all six busses
 	~condenser = Synth(\busCondenser, target: 1, addAction: \addToTail);
 }
+~showLevelsAndTree = {
+	s.meter;
+	s.plotTree;
+};
 )
 
-//you'll see some errors if you run this when you don't already have groups. Those are fine. It should still be working as expected.
