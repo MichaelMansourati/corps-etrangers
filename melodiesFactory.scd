@@ -1,19 +1,21 @@
 (
 //how long a melody exists before it is replaced
 ~melodyLifetime = 30;
-~melodyCreator = {
+~melodiesCreator = {
 	var getMelodyLength = { rrand(3, 6) };
 	var getMelodyDurs = { |length| Array.fill(length, { rrand(3, 10) }) };
 	var getMelodyFreqs = { |length| Array.fill(length, { rrand(40, 160) })};
-	var len = getMelodyLength.value;
 
-	(
-		freqs: [ getMelodyFreqs.value(len), getMelodyFreqs.value(len), getMelodyFreqs.value(len)],
-		durs: getMelodyDurs.value(len)
-	)
+	Array.fill(3, {
+		var len = getMelodyLength.value;
+		(
+			freqs: [ getMelodyFreqs.value(len), getMelodyFreqs.value(len), getMelodyFreqs.value(len)],
+			durs: getMelodyDurs.value(len)
+		)
+	})
 };
 ~updateDashboard = {
-	var viewify = { |array|
+	var makeRow = { |array|
 		array.collect({ |item|
 			i = StaticText();
 			i.string = item;
@@ -26,17 +28,24 @@
 		t.string = titleText;
 		t.align = \topLeft;
 	};
-
-	~melodyTable.removeAll;
-	~melodyTable.layout_(
-		GridLayout.rows(
-			[[makeTitle.value("Melody Table"), columns: ~melody[\durs].size]],
-			viewify.value(["durs"] ++ ~melody[\durs]),
-			viewify.value(["freq1"] ++ ~melody[\freqs][0]),
-			viewify.value(["freq2"] ++ ~melody[\freqs][1]),
-			viewify.value(["freq3"] ++ ~melody[\freqs][2]),
-		)
+	var tables = ~melodies.collect(
+		{ arg melody, index;
+			[GridLayout.rows(
+				[[makeTitle.value("Melody Table " + (index+1)), columns: melody[\durs].size]],
+				makeRow.value(["durs"] ++ melody[\durs]),
+				makeRow.value(["freq1"] ++ melody[\freqs][0]),
+				makeRow.value(["freq2"] ++ melody[\freqs][1]),
+				makeRow.value(["freq3"] ++ melody[\freqs][2]),
+			)]
+		}
 	);
-	~melodyTable.bounds = Rect(0, (~instGroups.size * 25), 40 * (~melody[\durs].size + 1), 125);
+	~melodiesTable.removeAll;
+	~melodiesTable.layout_(
+		GridLayout.columns(*tables)
+	);
+	~melodiesTable.bounds = Rect(0, (~instGroups.size * 25), 800, 125);
 };
 )
+
+
+

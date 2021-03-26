@@ -61,8 +61,8 @@ SynthDef(\busCondenser, {
 	// create dashboard window
 	~dashboard.notNil.postln;
 	if(~dashboard.notNil, { ~dashboard.close; }, {});
-	~dashboard = Window("Dashboard", Rect(10, 10, 500, 500)).front;
-	~melodyTable = View(~dashboard);
+	~dashboard = Window("Dashboard", Rect(10, 10, 800, 500)).front;
+	~melodiesTable = View(~dashboard);
 	~instViews = createViews.value(instCount, ~dashboard);
 };
 

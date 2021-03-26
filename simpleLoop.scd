@@ -13,14 +13,14 @@
 	instArray.do({ arg instNum, index;
 		Task({
 			{
-
+				var chosenMelody = ~melodies.choose;
 				(getWaitTime.value * index).yield;
 				~instPatterns[instNum] = getRandomSound.value.value(
 					instNum,
-					~melody
+					chosenMelody
 				);
 
-				~melody[\durs].sum({|i| i }).yield;
+				chosenMelody[\durs].sum({|i| i }).yield;
 
 				~instPatterns[instNum].stop;
 				~instGroups[instNum].set(\gate, 0);
@@ -40,7 +40,7 @@
 x = {
 	//every twenty seconds, set ~subject to a new random melody
 	TempoClock.sched(0, {
-		~melody = ~melodyCreator.value;
+		~melodies = ~melodiesCreator.value;
 		{ ~updateDashboard.value }.defer;
 		~melodyLifetime;
 	});
